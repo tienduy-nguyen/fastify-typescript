@@ -1,15 +1,4 @@
-import fastify from 'fastify';
-
-const app = fastify({
-  trustProxy: true,
-  logger: {
-    level: 'warn',
-  },
-});
-
-app.get('/', (req, res) => {
-  res.send({ message: 'Hi there!' });
-});
+import { app } from './app';
 
 app.listen(3000, (err, address) => {
   if (err) {
