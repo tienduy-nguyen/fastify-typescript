@@ -4,8 +4,6 @@
     "typeRoots": ["./node_modules/@types", "src/@types"],
     "types": ["jest", "node"],
     "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
     "sourceMap": true,
     "incremental": true,
     "importHelpers": true,
@@ -28,6 +26,7 @@
     "outDir": "./dist",
     "allowJs": true,
     "noEmit": false,
+    "skipLibCheck": true,
     "baseUrl": "."
   },
   "include": ["src", "test", "prisma"]

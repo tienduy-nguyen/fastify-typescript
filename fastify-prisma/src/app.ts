@@ -3,6 +3,7 @@ import cors from 'fastify-cors';
 import helmet from 'fastify-helmet';
 import rateLimit from 'fastify-rate-limit';
 import { envConfig } from './common/configs/env.config';
+import { router } from './routes';
 
 const app = fastify({
   trustProxy: true,
@@ -20,9 +21,15 @@ app.get('/', (req, res) => {
   res.send({ message: 'Hi there!' });
 });
 
+app.register(router);
+
 app.setErrorHandler((err, req, res) => {
   res.status(err.statusCode || 500);
-  res.send({ error: { message: err.message || 'Internal server error' } });
+  res.send({
+    error: err.message || 'Internal server error',
+    statusCode: err.statusCode || 500,
+    message: `Route ${req.method}:${req.url} ${err.message}`,
+  });
 });
 
 export { app };
