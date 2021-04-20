@@ -3,7 +3,7 @@ import { renderRoutes } from './routes';
 
 export const router: FastifyPluginCallback = (fastify: FastifyInstance, opts, next) => {
   fastify.decorateRequest('user', null);
-  fastify.addHook('onRequest', (req, res, next) => {
+  fastify.addHook('onRequest', (req: any, res, next) => {
     console.log('onRequest');
     req.user = null;
     next();

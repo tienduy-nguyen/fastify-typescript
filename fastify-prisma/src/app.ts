@@ -26,9 +26,9 @@ app.register(router);
 app.setErrorHandler((err, req, res) => {
   res.status(err.statusCode || 500);
   res.send({
+    message: `Route ${req.method}:${req.url}`,
     error: err.message || 'Internal server error',
     statusCode: err.statusCode || 500,
-    message: `Route ${req.method}:${req.url} ${err.message}`,
   });
 });
 

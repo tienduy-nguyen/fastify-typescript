@@ -10,7 +10,11 @@ export const register: RouteHandlerMethod = async (req, res) => {
     const user = await prismaService.user.create({
       data: { name, email, password: hashed },
     });
-    res.send({ data: { user } });
+    const { password: pass, ...rest } = user;
+    const payload: PayloadUserForJwtToken = {
+      user: rest,
+    };
+    res.send({ data: { user: rest, accessToken: signToken(payload) } });
   } catch (error) {
     throw new HttpException(error.message);
   }

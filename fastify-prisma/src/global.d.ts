@@ -9,9 +9,8 @@ declare namespace NodeJS {
     JWT_SECRET?: string;
   }
 }
-
 declare module 'fastify' {
-  interface FastifyRequest {
+  export interface FastifyRequest {
     user: any;
   }
 }
