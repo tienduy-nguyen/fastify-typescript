@@ -1,4 +1,5 @@
 module.exports = {
+  clearMocks: true,
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: './',
   moduleNameMapper: {
@@ -12,4 +13,5 @@ module.exports = {
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
   setupFiles: ['./jest.setup.ts'],
+  setupFilesAfterEnv: ['jest-extended'],
 };

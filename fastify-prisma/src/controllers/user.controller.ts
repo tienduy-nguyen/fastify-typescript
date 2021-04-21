@@ -1,6 +1,6 @@
 import { RouteHandlerMethod } from 'fastify';
 import { HttpException } from 'src/common/exceptions';
-import { prismaService } from 'src/common/utils';
+import { prismaService } from 'src/providers/prisma.service';
 
 export const getUsers: RouteHandlerMethod = async (req, res) => {
   try {

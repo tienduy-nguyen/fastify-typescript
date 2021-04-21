@@ -1,7 +1,8 @@
 import { RouteHandlerMethod } from 'fastify';
 import { BadRequestException, HttpException } from 'src/common/exceptions';
 import { PayloadUserForJwtToken } from 'src/common/types';
-import { hashPassword, prismaService, signToken, verifyPassword } from 'src/common/utils';
+import { hashPassword, signToken, verifyPassword } from 'src/common/utils';
+import { prismaService } from 'src/providers/prisma.service';
 
 export const register: RouteHandlerMethod = async (req, res) => {
   try {
@@ -34,7 +35,7 @@ export const login: RouteHandlerMethod = async (req, res) => {
     };
     res.send({ data: { user: rest, accessToken: signToken(payload) } });
   } catch (error) {
-    if (error.status == '400') throw error;
+    if (error.statusCode == '400') throw error;
     throw new HttpException(error.message);
   }
 };

@@ -1,11 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { envConfig } from 'src/common/configs/env.config';
 import { BadRequestException } from '../exceptions';
 import { DataStoredFromToken } from '../types';
-
-export const prismaService = new PrismaClient();
 
 export const hashPassword = (plain: string): Promise<string> => {
   return hash(plain, 12);
