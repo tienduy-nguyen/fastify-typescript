@@ -12,7 +12,7 @@ export interface DataStoredFromToken {
 }
 
 export interface UserFromRequest {
-  id?: string | number;
+  id?: number;
   email?: string;
   name?: string;
 }

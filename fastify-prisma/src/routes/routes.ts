@@ -1,6 +1,6 @@
 import { RouteOptions } from 'fastify';
 import * as controllers from 'src/controllers';
-// import { authMiddleware } from 'src/common/middlewares/auth';
+import { authMiddleware } from 'src/common/middlewares/auth';
 
 type RouteConfig = Record<string, RouteOptions>;
 
@@ -25,7 +25,7 @@ const routes: RouteConfig = {
   getAllUsers: {
     method: 'GET',
     url: '/users',
-    // preHandler: [authMiddleware],
+    preHandler: [authMiddleware],
     handler: controllers.getUsers,
   },
 };
