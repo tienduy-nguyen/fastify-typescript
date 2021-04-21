@@ -1,75 +1,43 @@
-import { injectable } from 'tsyringe';
-import { BadRequestException, ConflictException } from 'src/common/exceptions';
+import { container, injectable, singleton } from 'tsyringe';
 import { PasswordService } from './password.service';
-import { PrismaClient, User } from '@prisma/client';
-import { prismaService } from 'src/providers/db';
+import { LoginUserDto, RegisterUserDto } from './dto';
+import { BadRequestException, ConflictException } from 'src/common/exceptions';
+import { User } from '../user/user.model';
+import { emailRegex } from 'src/common/utils';
+import { getConnection, Repository } from 'typeorm';
 
 @injectable()
 export class AuthService {
-  private _db: PrismaClient;
-  constructor(private passwordService: PasswordService) {
-    this._db = prismaService;
+  private userRepository: Repository<User>;
+  constructor(private passwordService: PasswordService) {}
+
+  public async register(input: RegisterUserDto): Promise<User> {
+    if (!this.passwordService) this.passwordService = container.resolve(PasswordService);
+    const userCheck = await this.userRepository.findOne({ where: { email: input.email } });
+    if (userCheck) throw new ConflictException(`User with email ${input.email} already exists!`);
+    const hashed = await this.passwordService.hash(input.password);
+    const user = this.userRepository.create({ ...input, password: hashed });
+    await this.userRepository.save(user);
+    return user;
   }
 
-  public async registerUser(data: RegisterUserDto): Promise<User> {
-    const { email, first_name, last_name, birthdate, city, country, street, zip } = data;
-    const check = await this.userService.getUserByEmail(email);
-    if (check) {
-      throw new ConflictException(`User with email ${email} already existed`);
+  public async login(input: LoginUserDto): Promise<User> {
+    if (!this.userRepository) {
+      const connection = await getConnection();
+      this.userRepository = connection.getRepository(User);
     }
-
-    let password = await this.passwordService.hash(data.password);
-
-    const userTemp = new User({
-      email,
-      password,
-      first_name,
-      last_name,
-      birthdate,
-      street,
-      city,
-      country,
-      zip,
-    });
-    const mutation = `
-    INSERT INTO "users" (email, password, first_name, last_name, 
-                        full_name, birthdate, street, 
-                        city, country, zip, status, 
-                        createdAt, updatedAt)
-
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?);
-    `;
-    const values = [
-      email,
-      password,
-      first_name,
-      last_name,
-      userTemp.full_name,
-      birthdate,
-      street,
-      city,
-      country,
-      zip,
-      'ACTIVE',
-      userTemp.createdAt,
-      userTemp.updatedAt,
-    ];
-
-    await this._db.run(mutation, values);
-    const userCreated: User = await this._db.get(`SELECT * from "users" WHERE email='${email}'`);
-    return userCreated;
-  }
-
-  public async loginUser(data: LoginUserDto): Promise<User> {
-    const { email, password } = data;
-    const user: User = await this.userService.getUserByEmail(email);
-    if (!user) {
-      throw new BadRequestException('Invalid credentials');
+    if (!this.passwordService) this.passwordService = container.resolve(PasswordService);
+    const { usernameOrEmail, password } = input;
+    const isEmail = emailRegex.test(usernameOrEmail);
+    let user: User;
+    if (isEmail) {
+      user = await this.userRepository.findOne({ where: { email: usernameOrEmail } });
+    } else {
+      user = await this.userRepository.findOne({ where: { username: usernameOrEmail } });
     }
+    if (!user) throw new BadRequestException('Invalid credentials!');
     const isMatch = await this.passwordService.verify(user.password, password);
-    if (!isMatch) {
-      throw new BadRequestException('Invalid credentials');
-    }
+    if (!isMatch) throw new BadRequestException('Invalid credentials!');
     return user;
   }
 }

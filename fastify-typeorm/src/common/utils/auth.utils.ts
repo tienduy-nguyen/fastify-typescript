@@ -13,15 +13,18 @@ export const verifyPassword = (plain: string, encrypted: string): Promise<boolea
 };
 
 export const signToken = (payload: any): string => {
-  const token = jwt.sign(payload, envConfig().jwtSecret, { expiresIn: 60 * 60 * 2 });
+  const token = jwt.sign(payload, envConfig().jwt.jwtSecret, { expiresIn: 60 * 60 * 2 });
   return token;
 };
 
 export const verifyToken = (token: string): DataStoredFromToken => {
   try {
-    const decoded = jwt.verify(token, envConfig().jwtSecret);
+    console.log('secret', envConfig().jwt.jwtSecret);
+    const decoded = jwt.verify(token, envConfig().jwt.jwtSecret);
     return decoded as DataStoredFromToken;
   } catch (error) {
     throw new BadRequestException('Token missing or invalid');
   }
 };
+
+export const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;

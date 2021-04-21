@@ -1,4 +1,3 @@
-import { join } from 'path';
 import dotenv from 'dotenv';
 
 export function ormConfig(): any {
@@ -20,7 +19,7 @@ const configForTesting = () => {
   return {
     type: 'sqlite',
     database: 'src/common/databases/test.db',
-    entities: [join(__dirname, '**', '*.model.{ts,js}')],
+    entities: ['src/modules/**/*.model{.ts,.js}'],
     synchronize: true,
   };
 };
@@ -33,8 +32,7 @@ const configForDevelopment = () => {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    autoLoadEntities: true,
-    entities: [join(__dirname, '**', '*.model.{ts,js}')],
+    entities: ['src/modules/**/*.model{.ts,.js}'],
     logging: false,
     synchronize: true,
   };
@@ -48,8 +46,7 @@ const configForProduction = () => {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    autoLoadEntities: true,
-    entities: [join(__dirname, '**', '*.model.{ts,js}')],
+    entities: ['src/modules/**/*.model{.ts,.js}'],
     logging: false,
     synchronize: true,
   };

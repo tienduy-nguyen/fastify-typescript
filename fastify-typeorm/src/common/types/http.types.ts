@@ -14,7 +14,7 @@ export interface DataStoredFromToken {
 export interface UserFromRequest {
   id?: string;
   email?: string;
-  name?: string;
+  username?: string;
 }
 export interface SessionAuthToken {
   authToken?: IAuthToken;

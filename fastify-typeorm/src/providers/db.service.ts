@@ -1,5 +1,5 @@
 import { ormConfig } from 'src/common/configs/orm.config';
-import { createConnection, Connection } from 'typeorm';
+import { createConnection, Connection, getConnection } from 'typeorm';
 import { injectable } from 'tsyringe';
 import { LoggerService } from './logger.service';
 
@@ -7,9 +7,10 @@ import { LoggerService } from './logger.service';
 export class DbService {
   private _connection: Connection;
   constructor(private logger: LoggerService) {}
-  public async getConnection() {
-    if (!this._connection) {
-      this._connection = await createConnection(ormConfig());
+  public async getDbConnection() {
+    if (!getConnection()) {
+      await createConnection(ormConfig());
+      this._connection = getConnection();
     }
     return this._connection;
   }
