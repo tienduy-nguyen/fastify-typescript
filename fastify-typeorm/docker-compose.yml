@@ -1,0 +1,58 @@
+version: '3.8'
+services: 
+  server-api:
+    container_name: server-fastify-prisma-api
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes: 
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on: 
+      - mysql
+    env_file: 
+      - .env
+    ports: 
+      - ${SERVER_PORT}:${SERVER_PORT}
+    networks: 
+      - fastify-network
+  
+  mysql:
+    image: mysql:latest
+    container_name: fastify-prisma-mysql
+    restart: always
+    env_file: 
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_PORT=3306
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - fastify-network
+    logging:
+      driver: none
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - fastify-network
+    logging:
+      driver: none
+    
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  prisma_dev_network:
+    driver: bridge
+    name: fastify-network
